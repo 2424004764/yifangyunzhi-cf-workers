@@ -29,5 +29,12 @@
 	],
 	"vars": {
 		"R2_PUBLIC_HOST": "https://yfyz-r2.fologde.com"
-	}
+	},
+	"routes": [
+		{
+			"pattern": "yfyz.fologde.com",
+			"zone_name": "fologde.com",
+			"custom_domain": true
+		}
+	]
 }

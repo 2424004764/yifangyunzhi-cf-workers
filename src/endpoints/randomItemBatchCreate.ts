@@ -38,12 +38,17 @@ export class RandomItemBatchCreate extends OpenAPIRoute {
 			values.push(userId, group_id, msg, now);
 		}
 
-		const result = await c.env.yifangyunzhi.prepare(
-			`INSERT INTO random_select_item (user_id, group_id, message, created_on) VALUES ${placeholders}`
+		const newIds = newMessages.map(() => crypto.randomUUID().replace(/-/g, ""));
+		const placeholders = newMessages.map(() => "(?, ?, ?, ?, ?)").join(", ");
+		const values: (string | number)[] = [];
+		for (let i = 0; i < newMessages.length; i++) {
+			values.push(newIds[i], userId, group_id, newMessages[i], now);
+		}
+
+		await c.env.yifangyunzhi.prepare(
+			`INSERT INTO random_select_item (id, user_id, group_id, message, created_on) VALUES ${placeholders}`
 		).bind(...values).run();
 
-		const startId = result.meta.last_row_id;
-		const ids = newMessages.map((_, i) => startId + i);
-		return ok(c, { ids, skipped: messages.length - newMessages.length });
+		return ok(c, { ids: newIds, skipped: messages.length - newMessages.length });
 	}
 }

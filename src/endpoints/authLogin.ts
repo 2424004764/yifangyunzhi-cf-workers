@@ -57,10 +57,11 @@ export class AuthLogin extends OpenAPIRoute {
 			).bind(now, `%${wx.openid}%`).run();
 			user = { id: existing.id, wx_openid: existing.wx_openid };
 		} else {
+			const userId = crypto.randomUUID().replace(/-/g, "");
 			const result = await c.env.yifangyunzhi.prepare(
-				"INSERT INTO user (wx_openid, register_date, last_login_date) VALUES (?, ?, ?)"
-			).bind(wx.openid, now, now).run();
-			user = { id: String(result.meta.last_row_id), wx_openid: wx.openid };
+				"INSERT INTO user (id, wx_openid, register_date, last_login_date) VALUES (?, ?, ?, ?)"
+			).bind(userId, wx.openid, now, now).run();
+			user = { id: userId, wx_openid: wx.openid };
 		}
 
 		// 3. 签发 JWT

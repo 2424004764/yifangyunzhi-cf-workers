@@ -15,9 +15,10 @@ export class RandomGroupCreate extends OpenAPIRoute {
 	async handle(c: AppContext) {
 		const { group_title } = (await this.getValidatedData<typeof this.schema>()).body;
 		const now = Math.floor(Date.now() / 1000);
-		const result = await c.env.yifangyunzhi.prepare(
-			"INSERT INTO random_select_group (user_id, group_title, created_on) VALUES (?, ?, ?)"
-		).bind(c.get("userId"), group_title, now).run();
-		return ok(c, { id: result.meta.last_row_id });
+		const id = crypto.randomUUID().replace(/-/g, "");
+		await c.env.yifangyunzhi.prepare(
+			"INSERT INTO random_select_group (id, user_id, group_title, created_on) VALUES (?, ?, ?, ?)"
+		).bind(id, c.get("userId"), group_title, now).run();
+		return ok(c, { id });
 	}
 }

@@ -21,6 +21,6 @@ export class AnimeGroupItemCreate extends OpenAPIRoute {
 		const result = await c.env.yifangyunzhi.prepare(
 			"INSERT INTO anime_gen_group_item (id, group_id, is_row, style, image_url, created_on, updated_on) VALUES (?, ?, ?, ?, ?, ?, ?)"
 		).bind(id, d.group_id, d.is_row, d.style ?? null, d.image_url, now, now).run();
-		return ok(c, { id: result.meta.last_row_id });
+		return ok(c, { id });
 	}
 }

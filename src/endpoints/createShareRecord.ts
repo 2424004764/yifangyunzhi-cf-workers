@@ -27,12 +27,13 @@ export class CreateShareRecord extends OpenAPIRoute {
 		const data = await this.getValidatedData<typeof this.schema>();
 		const { user_id, permission, expiration_seconds, create_date } = data.body;
 
+		const id = crypto.randomUUID().replace(/-/g, "");
 		const now = create_date ?? Math.floor(Date.now() / 1000);
 
-		const result = await c.env.yifangyunzhi.prepare(
-			"INSERT INTO share_permission_record (user_id, permission, expiration_seconds, create_date) VALUES (?, ?, ?, ?)"
-		).bind(user_id, JSON.stringify(permission), expiration_seconds, now).run();
+		await c.env.yifangyunzhi.prepare(
+			"INSERT INTO share_permission_record (id, user_id, permission, expiration_seconds, create_date) VALUES (?, ?, ?, ?, ?)"
+		).bind(id, user_id, JSON.stringify(permission), expiration_seconds, now).run();
 
-		return ok(c, { id: result.meta.last_row_id });
+		return ok(c, { id });
 	}
 }
